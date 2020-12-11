@@ -111,16 +111,51 @@ def scrape_mars_featured_image():
     # Return results
     return full_image_link
 
+#
+# Go to https://space-facts.com/mars/ and use Pandas scrape the the embedded tables
+#
+
+
+def pandas_scrape_mars_facts():
+
+    # Set the URL to scrape
+    pandas_url = "https://space-facts.com/mars/"
+
+    # Read in all the tables from the html page
+    tables = pd.read_html(pandas_url)
+
+    # First table contains the information we wants
+    mars_df = tables[0]
+
+    # Align the columns and index to the desired output
+    mars_df = mars_df.rename(columns={
+                             mars_df.columns[0]: "Description", mars_df.columns[1]: "Mars"}).set_index("Description")
+
+    # pprint(mars_df.to_html())
+
+    # Strip the newlines
+    html_table = mars_df.to_html(classes="table table-striped")
+    html_table = html_table.replace('\n', '')
+
+    # format nicely
+    soup = bs(html_table, "html.parser")
+    html_table = soup.prettify()
+
+    return html_table
 
 #
 # Calls all the scraping functions and returns a dictionary
 #
+
+
 def scrape():
 
     news = scrape_mars_news()
     featured_image_url = scrape_mars_featured_image()
-    
+    mars_facts_table = pandas_scrape_mars_facts()
+
     return {
         "news": news,
         "featured_image_url": featured_image_url,
+        "mars_facts_table": mars_facts_table,
     }

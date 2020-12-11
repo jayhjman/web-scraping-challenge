@@ -1,0 +1,27 @@
+.img-featured {
+  max-width: 730px;
+  max-height: 730px;
+  width: 100%;
+  height: auto;
+}
+
+.font-facts {
+  font-size: 12px;
+}
+
+.img-hemishperes {
+  max-width: 520px;
+  max-height: 520px;
+  width: 100%;
+  height: auto;
+}
+
+.box-hemispheres {
+  padding: 0 5px 0 5px;
+}
+
+.footer-love {
+  background-color: #e9ecef;
+  border-radius: 0.3rem;
+  box-sizing: border-box;
+}

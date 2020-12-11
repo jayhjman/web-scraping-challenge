@@ -9,8 +9,23 @@ app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb://localhost:27017/mars_db"
 mongo = PyMongo(app)
 
-# Or set inline
-# mongo = PyMongo(app, uri="mongodb://localhost:27017/craigslist_app")
+
+def scrape_and_save_mars_data():
+
+    # Set the collection name
+    mars_data = mongo.db.mars_data
+
+    # Call the scrape functions
+    mars_info = scrape_mars.scrape()
+
+    # print to the log to make sure we have data
+    pprint(mars_info)
+
+    # Upsert the data, updating if needed, otherwise insert
+    mars_data.update({}, mars_info, upsert=True)
+
+    return mars_info
+
 
 # clear all existing data out of the collection.
 # For demo purposes only,
@@ -20,18 +35,22 @@ mongo.db.mars_data.drop()
 
 @app.route("/")
 def index():
+
+    # Fetch the data from the database
     mars_data = mongo.db.mars_data.find_one()
+
+    # Catches the first time through when there is no data
+    if mars_data == None:
+        mars_data = scrape_and_save_mars_data()
+
     return render_template("index.html", mars_data=mars_data)
 
 
 @app.route("/scrape")
 def scraper():
-    mars_data = mongo.db.mars_data
-    mars_info = scrape_mars.scrape()
 
-    pprint(mars_info)
+    scrape_and_save_mars_data()
 
-    mars_data.update({}, mars_info, upsert=True)
     return redirect("/", code=302)
 
 

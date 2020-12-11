@@ -144,6 +144,70 @@ def pandas_scrape_mars_facts():
     return html_table
 
 #
+# Go to https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars and scrape
+# the Mars hemisphere iamge link and title
+#
+
+
+def scrape_mars_hemisphere(hemishpere):
+
+    browser = init_browser()
+
+    # Visit https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars
+    url = "https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars"
+    browser.visit(url)
+
+    # Delay so we can finish reading the page
+    time.sleep(1)
+
+    # click the link to the 1st hemisphere
+    browser.links.find_by_partial_text(hemishpere).click()
+
+    # Delay so we can finish reading the page
+    time.sleep(1)
+
+    # Scrape page into Soup
+    html = browser.html
+    soup = bs(html, "html.parser")
+
+    # Grab the download section data to get the full image link
+    download_snippet = soup.find("div", class_="downloads")
+
+    # Grab the first href in the anchor, this is the jpg link
+    image_link = download_snippet.find("a")["href"]
+
+    # Only on H2 html element with class "title" so we get title from there
+    image_title = soup.find("h2", class_="title").get_text()
+
+    # Quit the browser after scraping
+    browser.quit()
+
+    return {
+        "title": image_title,
+        "img_url": image_link,
+    }
+
+#
+# Pass the list of hemispheres to get the list of images and titles
+#
+
+
+def scrape_mars_hemispheres():
+
+    hemispheres = [
+        "Cerberus Hemisphere Enhanced",
+        "Schiaparelli Hemisphere Enhanced",
+        "Syrtis Major Hemisphere Enhanced",
+        "Valles Marineris Hemisphere Enhanced",
+    ]
+    hemisphere_list = []
+
+    for hemisphere in hemispheres:
+        hemisphere_list.append(scrape_mars_hemisphere(hemisphere))
+
+    return hemisphere_list
+
+#
 # Calls all the scraping functions and returns a dictionary
 #
 
@@ -153,9 +217,11 @@ def scrape():
     news = scrape_mars_news()
     featured_image_url = scrape_mars_featured_image()
     mars_facts_table = pandas_scrape_mars_facts()
+    mars_hemispheres = scrape_mars_hemispheres()
 
     return {
         "news": news,
         "featured_image_url": featured_image_url,
         "mars_facts_table": mars_facts_table,
+        "mars_hemispheres": mars_hemispheres,
     }

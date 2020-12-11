@@ -10,6 +10,19 @@ app.config["MONGO_URI"] = "mongodb://localhost:27017/mars_db"
 mongo = PyMongo(app)
 
 
+#
+# Clearning the collection out and forcing fetch of fresh data
+#
+mongo.db.mars_data.drop()
+
+
+#
+# Because your mongo collection could be empty
+# on your initial fetch of "/" I made this generic
+# function to be called to scrape and poplate mongo.
+# It is also used if an explicit scrape is requested.
+#
+
 def scrape_and_save_mars_data():
 
     # Set the collection name
@@ -19,18 +32,12 @@ def scrape_and_save_mars_data():
     mars_info = scrape_mars.scrape()
 
     # print to the log to make sure we have data
-    pprint(mars_info)
+    # pprint(mars_info)
 
     # Upsert the data, updating if needed, otherwise insert
     mars_data.update({}, mars_info, upsert=True)
 
     return mars_info
-
-
-# clear all existing data out of the collection.
-# For demo purposes only,
-# you may not want to do this for an app you're building!
-mongo.db.mars_data.drop()
 
 
 @app.route("/")
@@ -49,6 +56,8 @@ def index():
 @app.route("/scrape")
 def scraper():
 
+    # I ignore the return values of this as I redirect
+    # and it should be in the mongodb now
     scrape_and_save_mars_data()
 
     return redirect("/", code=302)

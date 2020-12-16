@@ -14,6 +14,10 @@
 
 - [style.css](static/style.css) - Some basic styling for the HTML template
 
+- [point_up.png](static/point_up.png) - Default image for pre-scrape screen
+
+- [favicon.ico](static/favicon.ico) - Having some fun with a favicon
+
 ## Results
 
 ![Top Html](images/top_html.jpg)

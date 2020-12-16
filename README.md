@@ -13,3 +13,14 @@
 - [index.html](templates/index.html) - The HTML template used by Flask used to display the data
 
 - [style.css](static/style.css) - Some basic styling for the HTML template
+
+## Results
+
+![Top Html](images/top_html.jpg)
+![Top Html](images/middle_html.jpg)
+![Top Html](images/bottom_html_1.jpg)
+![Top Html](images/bottom_html_2.jpg)
+
+## Author
+
+Made by Jay with :heart: in 2020.

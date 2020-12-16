@@ -139,7 +139,7 @@ def pandas_scrape_mars_facts():
 #
 
 
-def scrape_mars_hemisphere(hemishpere, browser):
+def scrape_mars_hemispheres(browser):
 
     # Visit https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars
     url = "https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars"
@@ -148,37 +148,7 @@ def scrape_mars_hemisphere(hemishpere, browser):
     # Delay so we can finish reading the page
     time.sleep(1)
 
-    # click the link to the 1st hemisphere
-    browser.links.find_by_partial_text(hemishpere).click()
-
-    # Delay so we can finish reading the page
-    time.sleep(1)
-
-    # Scrape page into Soup
-    html = browser.html
-    soup = bs(html, "html.parser")
-
-    # Grab the download section data to get the full image link
-    download_snippet = soup.find("div", class_="downloads")
-
-    # Grab the first href in the anchor, this is the jpg link
-    image_link = download_snippet.find("a")["href"]
-
-    # Only on H2 html element with class "title" so we get title from there
-    image_title = soup.find("h2", class_="title").get_text()
-
-    return {
-        "title": image_title,
-        "img_url": image_link,
-    }
-
-#
-# Pass the list of hemispheres to get the list of images and titles
-#
-
-
-def scrape_mars_hemispheres(browser):
-
+    # Loop through the hemispheres
     hemispheres = [
         "Cerberus Hemisphere Enhanced",
         "Schiaparelli Hemisphere Enhanced",
@@ -188,9 +158,43 @@ def scrape_mars_hemispheres(browser):
     hemisphere_list = []
 
     for hemisphere in hemispheres:
-        hemisphere_list.append(scrape_mars_hemisphere(hemisphere, browser))
+
+        # click the link to the hemisphere
+        browser.links.find_by_partial_text(hemisphere).click()
+
+        # Delay so we can finish reading the page
+        time.sleep(1)
+
+        # Scrape page into Soup
+        html = browser.html
+        soup = bs(html, "html.parser")
+
+        # Grab the download section data to get the full image link
+        download_snippet = soup.find("div", class_="downloads")
+
+        # Grab the first href in the anchor, this is the jpg link
+        image_link = download_snippet.find("a")["href"]
+
+        # Only on H2 html element with class "title" so we get title from there
+        image_title = soup.find("h2", class_="title").get_text()
+
+        # Create a dictionary to hold the results
+        hemisphere_dict = {
+            "title": image_title,
+            "img_url": image_link,
+        }
+
+        # Add to the list of hemispheres
+        hemisphere_list.append(hemisphere_dict)
+
+        # Go back to previous page to get next hemisphere
+        browser.back()
+
+        # Delay so we can finish reading the page
+        time.sleep(1)
 
     return hemisphere_list
+
 
 #
 # Utility function for poplating the mars_data dictionary

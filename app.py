@@ -11,7 +11,7 @@ mongo = PyMongo(app)
 
 
 #
-# Clearning the collection out and forcing fetch of fresh data
+# Clearing the collection out and forcing fetch of fresh data
 #
 mongo.db.mars_data.drop()
 
@@ -40,6 +40,12 @@ def scrape_and_save_mars_data():
     return mars_info
 
 
+#
+# Serve up the index.html template, if no data exists
+# in MongoDB, then scape and then display
+#
+
+
 @app.route("/")
 def index():
 
@@ -51,6 +57,11 @@ def index():
         mars_data = scrape_and_save_mars_data()
 
     return render_template("index.html", mars_data=mars_data)
+
+#
+# Scrape the Mars pages and then redirect to the index page
+# to display the latest Mars information
+#
 
 
 @app.route("/scrape")

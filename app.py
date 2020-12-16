@@ -1,7 +1,8 @@
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, send_from_directory
 from flask_pymongo import PyMongo
 import scrape_mars
 from pprint import pprint
+import os
 
 app = Flask(__name__)
 
@@ -19,7 +20,9 @@ mongo.db.mars_data.drop()
 #
 # Because your mongo collection could be empty
 # on your initial fetch of "/" I made this generic
-# function to be called to scrape and poplate mongo.
+# function could be called in the future to scrape
+# and poplate mongo before rendering the page.
+#
 # It is also used if an explicit scrape is requested.
 #
 
@@ -42,7 +45,7 @@ def scrape_and_save_mars_data():
 
 #
 # Serve up the index.html template, if no data exists
-# in MongoDB, then scape and then display
+# in MongoDB, then grab dummy mars_data and then display
 #
 
 
@@ -54,7 +57,12 @@ def index():
 
     # Catches the first time through when there is no data
     if mars_data == None:
-        mars_data = scrape_and_save_mars_data()
+        # Below is for future use in case we want to
+        # pre-load the mars_data
+        #mars_data = scrape_and_save_mars_data()
+
+        # give me back a dummy record for display
+        mars_data = scrape_mars.build_dummy_mars_data()
 
     return render_template("index.html", mars_data=mars_data)
 
@@ -72,6 +80,16 @@ def scraper():
     scrape_and_save_mars_data()
 
     return redirect("/", code=302)
+
+#
+# Add favicon
+#
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 if __name__ == "__main__":

@@ -38,7 +38,6 @@
 1. Change into the repository directory
 1. Execute the `app.py` file by typing `python app.py`
 1. Open up Chrome and go to http://localhost:5000/
-1. **The first time you go to http://localhost:5000/ it will take time as it is performing a initial scrape for display**
 
 ## Author
 

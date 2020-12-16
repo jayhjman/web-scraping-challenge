@@ -208,9 +208,58 @@ def scrape_mars_hemispheres():
     return hemisphere_list
 
 #
-# Calls all the scraping functions and returns a dictionary
+# Utility function for poplating the mars_data dictionary
 #
 
+
+def build_mars_data(news, image, table, hemispheres, dummy=False):
+
+    mars_data = {
+        "news": news,
+        "featured_image_url": image,
+        "mars_facts_table": table,
+        "mars_hemispheres": hemispheres,
+    }
+
+    if dummy:
+        # create a dummy mars_data for the initial screen
+        # this will get used by the index temple when
+        # no data exists in MongoDB
+        text = "Please Press The \"Scrape New Data\" Button Above"
+        dummy_url = "/static/point_up.png"
+
+        mars_data["news"] = {
+            "news_title": text,
+            "news_p": text,
+        }
+
+        mars_data["featured_image_url"] = dummy_url
+
+        mars_data["mars_facts_table"] = text
+
+        hemispheres = []
+        for i in range(4):
+            hemisphere_dict = {
+                "title": text,
+                "img_url": dummy_url,
+            }
+            hemispheres.append(hemisphere_dict)
+        mars_data["mars_hemispheres"] = hemispheres
+
+    return mars_data
+
+#
+# Triggers a dummy mars_data dictionary to be created
+#
+
+
+def build_dummy_mars_data():
+    return build_mars_data(None, None, None, None, True)
+
+
+#
+# Perform all the scraping by calling this one at a time
+#
 
 def scrape():
 
@@ -219,9 +268,5 @@ def scrape():
     mars_facts_table = pandas_scrape_mars_facts()
     mars_hemispheres = scrape_mars_hemispheres()
 
-    return {
-        "news": news,
-        "featured_image_url": featured_image_url,
-        "mars_facts_table": mars_facts_table,
-        "mars_hemispheres": mars_hemispheres,
-    }
+    return build_mars_data(news, featured_image_url, mars_facts_table,
+                           mars_hemispheres)

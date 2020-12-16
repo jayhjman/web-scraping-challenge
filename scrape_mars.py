@@ -20,9 +20,7 @@ def init_browser():
 #
 
 
-def scrape_mars_news():
-
-    browser = init_browser()
+def scrape_mars_news(browser):
 
     # Visit https://mars.nasa.gov/news/
     url = "https://mars.nasa.gov/news/"
@@ -48,9 +46,6 @@ def scrape_mars_news():
         "div", class_="rollover_description_inner").get_text()
     news_title = slide_list[0].find("h3").get_text()
 
-    # Quit the browser after scraping
-    browser.quit()
-
     # Return results
     return {
         "news_title": news_title,
@@ -64,9 +59,7 @@ def scrape_mars_news():
 #
 
 
-def scrape_mars_featured_image():
-
-    browser = init_browser()
+def scrape_mars_featured_image(browser):
 
     # Visit https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars
     url = "https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars"
@@ -104,9 +97,6 @@ def scrape_mars_featured_image():
     full_image_link = url.split("/spaceimages")[0] + full_image_snippet["src"]
 
     # print(full_image_link)
-
-    # Quit the browser after scraping
-    browser.quit()
 
     # Return results
     return full_image_link
@@ -149,9 +139,7 @@ def pandas_scrape_mars_facts():
 #
 
 
-def scrape_mars_hemisphere(hemishpere):
-
-    browser = init_browser()
+def scrape_mars_hemisphere(hemishpere, browser):
 
     # Visit https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars
     url = "https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars"
@@ -179,9 +167,6 @@ def scrape_mars_hemisphere(hemishpere):
     # Only on H2 html element with class "title" so we get title from there
     image_title = soup.find("h2", class_="title").get_text()
 
-    # Quit the browser after scraping
-    browser.quit()
-
     return {
         "title": image_title,
         "img_url": image_link,
@@ -192,7 +177,7 @@ def scrape_mars_hemisphere(hemishpere):
 #
 
 
-def scrape_mars_hemispheres():
+def scrape_mars_hemispheres(browser):
 
     hemispheres = [
         "Cerberus Hemisphere Enhanced",
@@ -203,7 +188,7 @@ def scrape_mars_hemispheres():
     hemisphere_list = []
 
     for hemisphere in hemispheres:
-        hemisphere_list.append(scrape_mars_hemisphere(hemisphere))
+        hemisphere_list.append(scrape_mars_hemisphere(hemisphere, browser))
 
     return hemisphere_list
 
@@ -223,7 +208,7 @@ def build_mars_data(news, image, table, hemispheres, dummy=False):
 
     if dummy:
         # create a dummy mars_data for the initial screen
-        # this will get used by the index temple when
+        # this will get used by the index template when
         # no data exists in MongoDB
         text = "Please Press The \"Scrape New Data\" Button Above"
         dummy_url = "/static/point_up.png"
@@ -263,10 +248,17 @@ def build_dummy_mars_data():
 
 def scrape():
 
-    news = scrape_mars_news()
-    featured_image_url = scrape_mars_featured_image()
+    # Create a Browser
+    browser = init_browser()
+
+    # Scrape the pages
+    news = scrape_mars_news(browser)
+    featured_image_url = scrape_mars_featured_image(browser)
     mars_facts_table = pandas_scrape_mars_facts()
-    mars_hemispheres = scrape_mars_hemispheres()
+    mars_hemispheres = scrape_mars_hemispheres(browser)
+
+    # Quit the browser after scraping
+    browser.quit()
 
     return build_mars_data(news, featured_image_url, mars_facts_table,
                            mars_hemispheres)

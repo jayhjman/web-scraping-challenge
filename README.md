@@ -21,6 +21,25 @@
 ![Top Html](images/bottom_html_1.jpg)
 ![Top Html](images/bottom_html_2.jpg)
 
+## Execution
+
+1. The assumption is that you have a working Python 3.6 environment and:
+
+   - Jupyter Notebook 6.1.4
+   - pandas 1.0.5
+   - Flask 1.1.2
+   - Flask-PyMongo 2.3.0
+   - splinter 0.14.0
+   - beautifulsoup4 4.9.3
+
+1. You will need download [_chromedriver.exe_](https://chromedriver.chromium.org/downloads) (or Mac OS equivalent for Mac) and ensure it is on your PATH. This will be executed by splinter during your screen scraping. If you have any trouble _make sure_ the version of your `chromedriver.exe` matches you Chrome browser version (87 <-> 87)
+1. Ensure you have a MongoDB up and running on your localhost (default port with no login restrictions)
+1. Clone the [git repository](https://github.com/jayhjman/web-scraping-challenge) for this project
+1. Change into the repository directory
+1. Execute the `app.py` file by typing `python app.py`
+1. Open up Chrome and go to http://localhost:5000/
+1. **The first time you go to http://localhost:5000/ it will take time as it is performing a initial scrape for display**
+
 ## Author
 
-Made by Jay with :heart: in 2020.
+Made by [Jay](https://www.linkedin.com/in/jay-hastings-techy/) with :heart: in 2020.
